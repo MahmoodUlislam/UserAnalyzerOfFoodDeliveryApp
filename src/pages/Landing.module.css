@@ -1,0 +1,74 @@
+/* all the css is clear to understand by name of the class & set as module way */
+
+.headingFont {
+  font-family: sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: #1490a6;
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+}
+.paragraphFont {
+  font-family: sans-serif;
+  font-weight: 400;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: #848484;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.filterBox {
+  border: 2px solid #1490a6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.button {
+  background-color: #1490a6;
+  color: #fff;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: #fff;
+  color: #1490a6;
+}
+.label {
+  font-size: 1.4rem;
+  color: #1490a6;
+  margin-right: 10px;
+}
+.dateSelection {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+.box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400;
+  background-color: #fff;
+  border: 2px solid #000;
+  box-shadow: 24;
+  padding: 4px;
+}
