@@ -10,7 +10,6 @@
     "@mui/lab": "^5.0.0-alpha.64",
     "@mui/material": "^5.2.8",
     "@syncfusion/ej2-react-calendars": "^19.4.42",
-    "material-ui-search-bar": "^1.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",

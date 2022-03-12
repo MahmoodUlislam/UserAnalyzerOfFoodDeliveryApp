@@ -4,7 +4,6 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DatePicker from "@mui/lab/DatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import { Box, Button, ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
-import Autocomplete from '@mui/material/Autocomplete';
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
@@ -13,7 +12,6 @@ import Modal from '@mui/material/Modal';
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import TextField from "@mui/material/TextField";
-import SearchBar from "material-ui-search-bar";
 import React from "react";
 import { RiEqualizerLine } from "react-icons/ri";
 import files from "../components/files";
@@ -24,7 +22,7 @@ import Styles from "./Landing.module.css";
 export default function Landing(props) {
 
   // for setting the default date of the date picker field.
-  const [fromDate, setfromDate] = React.useState(
+  const [fromDate, setFromData] = React.useState(
     new Date(new Date("2016-07-04"))
   );
   const [toDate, setToDate] = React.useState(
@@ -168,7 +166,7 @@ export default function Landing(props) {
                       name="from_date"
                       value={fromDate}
                       onChange={(newValue) => {
-                        setfromDate(newValue);
+                        setFromData(newValue);
                       }}
                       renderInput={(params) => <TextField {...params} />}
                     />
@@ -252,7 +250,6 @@ export default function Landing(props) {
             </p>
             <Button onClick={handleOpen} style={{ color: "#1490a6" }}>
               Edit Filter
-
               <RiEqualizerLine style={{ marginLeft: "5px" }} />
             </Button>
 
@@ -284,7 +281,7 @@ export default function Landing(props) {
                             name="from_date"
                             value={fromDate}
                             onChange={(newValue) => {
-                              setfromDate(newValue);
+                              setFromData(newValue);
                             }}
                             renderInput={(params) => <TextField {...params} />}
                           />
@@ -350,20 +347,15 @@ export default function Landing(props) {
               </Box>
             </Modal>
           </div>
-          <Autocomplete
-            style={{ width: "100%" }}
-            id="free-solo-demo"
-            freeSolo
-            options={customerProfile.map((option) => option.name)}
-            renderInput={(props) =>
-              <SearchBar {...props}
-                placeholder="Search by name"
-                value={searched}
-                onChange={(searchVal) => requestSearch(searchVal)}
-                onCancelSearch={() => cancelSearch()}
-              />}
-          />
 
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <input style={{ width: '300px', margin: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+              type="text"
+              placeholder="Search by name"
+              value={searched}
+              onChange={(searchVal) => requestSearch(searchVal)}
+              onCancelSearch={() => cancelSearch()} />
+          </div>
           <ImageList >
             {/* mapping of the profile data for rendering the user's profile */}
             {profile.map((item) => (
