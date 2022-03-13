@@ -36,19 +36,24 @@ export default function Landing(props) {
   const [profile, setProfile] = React.useState([]);
 
   // for search by user name
-  // const requestSearch = (e) => {
-  //   const search = e.target.value;
-  //   const filtered = files.filter((user) => {
-  //     return user.name.toLowerCase().includes(search.toLowerCase());
-  //   });
-  //   setProfile(filtered);
-  // };
-
+  const [searched, setSearched] = React.useState([]);
+  const requestSearch = (searchedVal) => {
+    const ProfileSearchArray = profile.filter((profile) => {
+      return profile.name.toLowerCase().includes(searchedVal.toLowerCase());
+    });
+    setSearched(ProfileSearchArray);
+  };
+  const cancelSearch = () => {
+    setSearched([]);
+    requestSearch(searched);
+  };
 
   // for modal
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+
 
   // for handling the user's action by changeHandler function as a event handler for setting the user status.
   const changeHandler = (e) => {
@@ -347,9 +352,8 @@ export default function Landing(props) {
               type="text"
               placeholder="Search by name"
               value={profile}
-              onChange={(e) => {
-                setProfile(e.target.value)
-              }}
+              onChange={(e) => requestSearch(e.target.value)}
+              onCancelSearch={() => cancelSearch()}
             />
           </div>
           <ImageList >
