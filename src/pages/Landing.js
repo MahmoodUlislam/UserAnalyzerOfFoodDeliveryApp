@@ -36,25 +36,19 @@ export default function Landing(props) {
   const [profile, setProfile] = React.useState([]);
 
   // for search by user name
-  const [searched, setSearched] = React.useState([]);
-  const requestSearch = (searchedVal) => {
-    const ProfileSearchArray = profile.filter((profile) => {
-      return profile.name.toLowerCase().includes(searchedVal.toLowerCase());
-    });
-    setProfile(ProfileSearchArray);
-  };
-  const cancelSearch = () => {
-    setSearched([]);
-    requestSearch(searched);
-  };
+  // const requestSearch = (e) => {
+  //   const search = e.target.value;
+  //   const filtered = files.filter((user) => {
+  //     return user.name.toLowerCase().includes(search.toLowerCase());
+  //   });
+  //   setProfile(filtered);
+  // };
+
 
   // for modal
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  // for setting the search value of the user name, which is set from the profile array.
-  const customerProfile = profile;
 
   // for handling the user's action by changeHandler function as a event handler for setting the user status.
   const changeHandler = (e) => {
@@ -352,9 +346,11 @@ export default function Landing(props) {
             <input style={{ width: '300px', margin: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
               type="text"
               placeholder="Search by name"
-              value={searched}
-              onChange={(searchVal) => requestSearch(searchVal)}
-              onCancelSearch={() => cancelSearch()} />
+              value={profile}
+              onChange={(e) => {
+                setProfile(e.target.value)
+              }}
+            />
           </div>
           <ImageList >
             {/* mapping of the profile data for rendering the user's profile */}
