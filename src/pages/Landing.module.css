@@ -35,6 +35,7 @@
   align-items: flex-start;
 }
 .button {
+  text-decoration: none;
   background-color: #1490a6;
   color: #fff;
   margin-bottom: 20px;
