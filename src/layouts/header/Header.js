@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import React from 'react';
 import { FiArrowLeft } from "react-icons/fi";
+import { Link } from 'react-router-dom';
 import Styles from './Header.module.css';
 
 export default function Header(props) {
@@ -24,7 +25,9 @@ export default function Header(props) {
                                 aria-label="menu"
                                 onClick={props.backArrowClickHandler}
                             >
-                                <FiArrowLeft />
+                                <Link className={Styles.backArrow} to="/">
+                                    <FiArrowLeft />
+                                </Link>
 
                             </IconButton> : null}
 

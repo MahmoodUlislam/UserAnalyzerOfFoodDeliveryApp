@@ -11,15 +11,16 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import TextField from "@mui/material/TextField";
 import React from "react";
-import { BrowserRouter, Link } from "react-router-dom";
-import files from "../components/files";
+import { Link } from "react-router-dom";
 import Header from "../layouts/header/Header";
 import Styles from "./Landing.module.css";
 
-export default function Landing() {
+
+
+export default function Landing(props) {
 
   // for setting the default date of the date picker field.
-  const [fromDate, setFromData] = React.useState(
+  const [fromDate, setFromDate] = React.useState(
     new Date(new Date("2016-07-04"))
   );
   const [toDate, setToDate] = React.useState(
@@ -28,12 +29,6 @@ export default function Landing() {
 
   // for setting the default value of the radio button group to select the user status.
   const [userStatus, setUserSTatus] = React.useState();
-
-
-  // for setting all the users of the selected status in an array to be used in the next render component.
-  const [profile, setProfile] = React.useState([]);
-
-
 
   // for handling the user's action by changeHandler function as a event handler for setting the user status.
   const changeHandler = (e) => {
@@ -54,66 +49,12 @@ export default function Landing() {
     return [year, month, day].join("-");
   }
 
-  // for generating the result of customer based on user status and date.
-  const formSubmitHandler = (e) => {
-    e.preventDefault();
-    let From = formatDate(fromDate);
-    let To = formatDate(toDate);
-    const profileArray = [];
-
-    //  calculating the logic for the selected user status based on date & meals ordered.
-    files.forEach((element) => {
-      let count = 0;
-
-      Object.keys(element.calendar.dateToDayId).forEach(function (dayId) {
-        if (
-          new Date(From) <= new Date(dayId) &&
-          new Date(To) >= new Date(dayId)
-        ) {
-          Object.keys(element.calendar.mealIdToDayId).forEach(function (
-            mealId
-          ) {
-            if (
-              element.calendar.dateToDayId[dayId] ===
-              element.calendar.mealIdToDayId[mealId]
-            ) {
-              count++;
-            }
-          });
-        }
-      });
-
-      // condition applied for calculating the user status based on the meals ordered.
-      if (userStatus === "active") {
-
-        if (count >= 5 && count <= 10) {
-          profileArray.push(element.profile);
-        }
-
-      } else if (userStatus === "superactive") {
-
-        if (count > 10) {
-          profileArray.push(element.profile);
-        }
-
-      } else if (userStatus === "bored") {
-
-        if (count === 0) {
-          profileArray.push(element.profile);
-        }
-
-      }
-      setProfile(profileArray);
-    });
-  };
 
 
-
-  // conditional rendering the result.
 
 
   return (
-    <React.Fragment>
+    <>
       {/* header section  */}
       <Header showBackArrow={false} />
 
@@ -126,7 +67,7 @@ export default function Landing() {
           </p>
         </div>
 
-        <form className={Styles.filterBox} onSubmit={formSubmitHandler}>
+        <form className={Styles.filterBox} onSubmit={props.formSubmitHandler}>
           <div className={Styles.heading}>
             <h3 className={Styles.headingFont}>Date</h3>
             <Divider sx={{ width: "400px" }} />
@@ -140,7 +81,7 @@ export default function Landing() {
                     name="from_date"
                     value={fromDate}
                     onChange={(newValue) => {
-                      setFromData(newValue);
+                      setFromDate(newValue);
                     }}
                     renderInput={(params) => <TextField {...params} />}
                   />
@@ -200,16 +141,12 @@ export default function Landing() {
               </RadioGroup>
             </FormControl>
           </div>
-          <BrowserRouter>
-            <Link className={Styles.button} to="/Profile">
-              Generate
-            </Link>
-          </BrowserRouter>
+          <Link to={"/Profiles"}>
+            <button className={Styles.button}>Generate</button>
+          </Link>
         </form>
       </Container>
-    </React.Fragment>
+    </>
   );
+
 }
-
-
-

@@ -10,8 +10,9 @@ import Header from "../layouts/header/Header";
 import Styles from "./Landing.module.css";
 
 export default function Profiles(props) {
+
     // for setting the default date of the date picker field.
-    const [fromDate, setFromData] = React.useState(
+    const [fromDate, setFromDate] = React.useState(
         new Date(new Date("2016-07-04"))
     );
     const [toDate, setToDate] = React.useState(
@@ -20,51 +21,24 @@ export default function Profiles(props) {
 
     // for setting the default value of the radio button group to select the user status.
     const [userStatus, setUserStatus] = React.useState();
+    // for setting all the users of the selected status in an array to be used in the next render component.
+    const [profile, setProfile] = React.useState([]);
+
+    const [searched, setSearched] = React.useState([]);
 
     // for modal
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    // for setting all the users of the selected status in an array to be used in the next render component.
-    const [profile, setProfile] = React.useState([]);
-
     // for search by user name
-    const [searched, setSearched] = React.useState([]);
-    const requestSearch = (searchedVal) => {
-        const ProfileSearchArray = profile.filter((profile) => {
-            return profile.name.toLowerCase().includes(searchedVal.toLowerCase());
-        });
-        setSearched(ProfileSearchArray);
-    };
-    // const cancelSearch = () => {
-    //   setSearched([]);
-    //   requestSearch(searched);
-    // };
-    // for back arrow event handler in header.
-    const backArrowClickHandler = e => {
-        setProfile([]);
+    function requestSearch(e) {
+        setSearched(profile.filter(files => files.name.toLowerCase().includes(e.target.value.toLowerCase())));
+    }
+    function cancelSearch() {
+        setSearched(profile);
     }
 
-
-    // for handling the user's action by changeHandler function as a event handler for setting the user status.
-    const changeHandler = (e) => {
-        let value = e.target.value;
-        setUserStatus(value);
-    };
-
-    // for formatting the date to be used in the next render component, to be calculated for selected user status.
-    function formatDate(date) {
-        var d = new Date(date),
-            month = "" + (d.getMonth() + 1),
-            day = "" + d.getDate(),
-            year = d.getFullYear();
-
-        if (month.length < 2) month = "0" + month;
-        if (day.length < 2) day = "0" + day;
-
-        return [year, month, day].join("-");
-    }
     // for generating the result of customer based on user status and date.
     const formSubmitHandler = (e) => {
         e.preventDefault();
@@ -118,11 +92,36 @@ export default function Profiles(props) {
         });
     };
 
+    // for formatting the date to be used in the next render component, to be calculated for selected user status.
+    function formatDate(date) {
+        var d = new Date(date),
+            month = "" + (d.getMonth() + 1),
+            day = "" + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = "0" + month;
+        if (day.length < 2) day = "0" + day;
+
+        return [year, month, day].join("-");
+    }
+
+    // for setting the search value of the user name, which is set from the profile array.
+    const customerProfile = profile;
+
+
+
+    // for handling the user's action by changeHandler function as a event handler for setting the user status.
+    const changeHandler = (e) => {
+        let value = e.target.value;
+        setUserStatus(value);
+    };
+
+
 
     return (
-        <React.Fragment>
+        <>
             {/* header section  */}
-            <Header showBackArrow={true} backArrowClickHandler={backArrowClickHandler} />
+            <Header showBackArrow={true} />
 
             {/* app container section  */}
             <Container >
@@ -137,6 +136,7 @@ export default function Profiles(props) {
                     </p>
                     <Button onClick={handleOpen} style={{ color: "#1490a6" }}>
                         Edit Filter
+
                         <RiEqualizerLine style={{ marginLeft: "5px" }} />
                     </Button>
 
@@ -168,7 +168,7 @@ export default function Profiles(props) {
                                                     name="from_date"
                                                     value={fromDate}
                                                     onChange={(newValue) => {
-                                                        setFromData(newValue);
+                                                        setFromDate(newValue);
                                                     }}
                                                     renderInput={(params) => <TextField {...params} />}
                                                 />
@@ -235,17 +235,13 @@ export default function Profiles(props) {
                     </Modal>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <input style={{ width: '300px', margin: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
-                        type="text"
-                        placeholder="Search by name"
-                        value={searched}
-                        onChange={(e) => {
-                            requestSearch(e.target.value);
-                        }}
-                    // onCancelSearch={() => cancelSearch()}
-                    />
-                </div>
+                <input style={{ width: '300px', margin: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    type="text"
+                    placeholder="Search by name"
+                    value={searched}
+                    onChange={requestSearch}
+                    onCancelSearch={() => cancelSearch()} />
+
                 <ImageList >
                     {/* mapping of the profile data for rendering the user's profile */}
                     {profile.map((item) => (
@@ -265,6 +261,7 @@ export default function Profiles(props) {
                     ))}
                 </ImageList>
             </Container>
-        </React.Fragment>
+        </>
+
     )
 }
