@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import React from 'react';
-import { render } from "react-dom";
+import ReactDom from 'react-dom/client';
 import { Provider } from 'react-redux';
 import {
   BrowserRouter
@@ -8,8 +8,7 @@ import {
 import App from "./App";
 import "./index.css";
 import filterByStatusSlice from './slices/filterByStatusSlice';
-
-const rootElement = document.getElementById("root");
+const root = ReactDom.createRoot(document.getElementById("root"));
 const store = configureStore({
   reducer: {
     filterByStatusSlice
@@ -18,13 +17,12 @@ const store = configureStore({
 );
 
 
-render(
+root.render(
   <Provider store={store}>
     <React.Fragment>
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </React.Fragment>
-  </Provider>,
-  rootElement
+  </Provider>
 );
