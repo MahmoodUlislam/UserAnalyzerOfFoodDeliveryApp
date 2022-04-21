@@ -5,26 +5,22 @@ import { Box, Button, Container, Divider, FormControl, FormControlLabel, ImageLi
 import RadioGroup from "@mui/material/RadioGroup";
 import React from 'react';
 import { RiEqualizerLine } from 'react-icons/ri';
+import { useDispatch, useSelector } from "react-redux";
 import files from "../components/files";
-import Header from "../layouts/header/Header";
+import { headerPropsUpdate, profileArrayUpdate } from "../slices/filterByStatusSlice";
 import Styles from "./Landing.module.css";
 
-export default function Profiles(props) {
-
+export default function Profiles() {
+    const profiles = useSelector((state) => state.filterByStatusSlice.profileArray);
     // for setting the default date of the date picker field.
-    const [fromDate, setFromDate] = React.useState(
-        new Date(new Date("2016-07-04"))
-    );
-    const [toDate, setToDate] = React.useState(
-        new Date(new Date())
-    );
-
+    const [fromDate, setFromDate] = React.useState(new Date(new Date("2016-07-04")));
+    const [toDate, setToDate] = React.useState(new Date(new Date()));
     // for setting the default value of the radio button group to select the user status.
     const [userStatus, setUserStatus] = React.useState();
-    // for setting all the users of the selected status in an array to be used in the next render component.
-    const [profile, setProfile] = React.useState([]);
 
     const [searched, setSearched] = React.useState([]);
+
+    let dispatch = useDispatch();
 
     // for modal
     const [open, setOpen] = React.useState(false);
@@ -33,23 +29,27 @@ export default function Profiles(props) {
 
     // for search by user name
     function requestSearch(e) {
-        setSearched(profile.filter(files => files.name.toLowerCase().includes(e.target.value.toLowerCase())));
+        setSearched(profiles.filter(files => files.name.toLowerCase().includes(e.target.value.toLowerCase())));
     }
-    function cancelSearch() {
-        setSearched(profile);
-    }
+    // function cancelSearch() {
+    //     setSearched(profiles);
+    // }
+
+    // function filterByStatus() {
+    //     return profiles.filter(files => files.status === userStatus);
+
+    // }
 
     // for generating the result of customer based on user status and date.
-    const formSubmitHandler = (e) => {
+    const formSubmitHandler = async (e) => {
         e.preventDefault();
         let From = formatDate(fromDate);
         let To = formatDate(toDate);
-        const profileArray = [];
 
         //  calculating the logic for the selected user status based on date & meals ordered.
         files.forEach((element) => {
             let count = 0;
-
+            // const profileArray = [];
             Object.keys(element.calendar.dateToDayId).forEach(function (dayId) {
                 if (
                     new Date(From) <= new Date(dayId) &&
@@ -72,23 +72,28 @@ export default function Profiles(props) {
             if (userStatus === "active") {
 
                 if (count >= 5 && count <= 10) {
-                    profileArray.push(element.profile);
+
+                    profiles.push(element.profile);
                 }
 
             } else if (userStatus === "superactive") {
 
                 if (count > 10) {
-                    profileArray.push(element.profile);
+
+                    profiles.push(element.profile);
+
                 }
 
             } else if (userStatus === "bored") {
 
                 if (count === 0) {
-                    profileArray.push(element.profile);
-                }
 
+                    profiles.push(element.profile);
+
+                }
             }
-            setProfile(profileArray);
+
+            dispatch(profileArrayUpdate(element));
         });
     };
 
@@ -104,25 +109,14 @@ export default function Profiles(props) {
 
         return [year, month, day].join("-");
     }
-
-    // for setting the search value of the user name, which is set from the profile array.
-    const customerProfile = profile;
-
-
-
-    // for handling the user's action by changeHandler function as a event handler for setting the user status.
-    const changeHandler = (e) => {
-        let value = e.target.value;
-        setUserStatus(value);
-    };
-
-
+    dispatch(headerPropsUpdate(
+        state => {
+            state.showBackArrow = true;
+        }
+    ));
 
     return (
         <>
-            {/* header section  */}
-            <Header showBackArrow={true} />
-
             {/* app container section  */}
             <Container >
                 <div style={{
@@ -209,21 +203,27 @@ export default function Profiles(props) {
                                                 value="active"
                                                 control={<Radio />}
                                                 label="Active"
-                                                onChange={changeHandler}
+                                                onChange={(e) => {
+                                                    setUserStatus(e.target.value);
+                                                }}
                                             />
                                             <FormControlLabel
                                                 name="user_status"
                                                 value="superactive"
                                                 control={<Radio />}
                                                 label="Super Active"
-                                                onChange={changeHandler}
+                                                onChange={(e) => {
+                                                    setUserStatus(e.target.value);
+                                                }}
                                             />
                                             <FormControlLabel
                                                 name="user_status"
                                                 value="bored"
                                                 control={<Radio />}
                                                 label="Bored"
-                                                onChange={changeHandler}
+                                                onChange={(e) => {
+                                                    setUserStatus(e.target.value);
+                                                }}
                                             />
                                         </RadioGroup>
                                     </FormControl>
@@ -240,25 +240,26 @@ export default function Profiles(props) {
                     placeholder="Search by name"
                     value={searched}
                     onChange={requestSearch}
-                    onCancelSearch={() => cancelSearch()} />
+                />
 
                 <ImageList >
                     {/* mapping of the profile data for rendering the user's profile */}
-                    {profile.map((item) => (
-                        <ImageListItem sx={{ maxWidth: "250px", textAlign: "center" }} key={item.name}>
+                    {profiles.map((profile) => (
+                        <ImageListItem sx={{ maxWidth: "250px", textAlign: "center" }} key={profile.profile.name}>
                             <img
-                                src={`${item.pictureUrl}?w=248&fit=crop&auto=format`}
-                                srcSet={`${item.pictureUrl}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                alt={item.name}
+                                src={`${profile.profile.pictureUrl}?w=248&fit=crop&auto=format`}
+                                srcSet={`${profile.profile.pictureUrl}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                alt={profile.profile.name}
                                 loading="lazy"
                             />
                             <ImageListItemBar
-                                title={item.name}
-                                subtitle={<span>by: {item.name}</span>}
+                                title={profile.profile.name}
+                                subtitle={<span>by: {profile.profile.name}</span>}
                                 position="below"
                             />
                         </ImageListItem>
                     ))}
+
                 </ImageList>
             </Container>
         </>

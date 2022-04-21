@@ -1,13 +1,21 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Header from './header/Header';
+import Styles from './Layout.module.css';
 
-const Layout = ({ children }) => {
+
+const Layout = () => {
+
     return (
-        <>
-            {/* for future optimization */}
+        <React.Fragment>
 
-            {/* <Header /> */}
-            <main style={{ marginTop: "80px" }} className='mainContent'>{children}</main>
-        </>
+            <Header />
+            <div className={Styles.outlet}>
+                {/* for future optimization */}
+                <Outlet />
+            </div>
+
+        </React.Fragment>
     )
 }
 

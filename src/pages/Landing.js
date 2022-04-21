@@ -1,8 +1,4 @@
 // used Material UI by considering easy optimization in future
-
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import DatePicker from "@mui/lab/DatePicker";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
@@ -10,30 +6,87 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import TextField from "@mui/material/TextField";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import React from "react";
-import { Link } from "react-router-dom";
-import Header from "../layouts/header/Header";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import files from "../components/files";
+import { profileArrayUpdate } from "../slices/filterByStatusSlice";
 import Styles from "./Landing.module.css";
 
+export default function Landing() {
+  const [fromDate, setFromDate] = React.useState(new Date(new Date("2016-07-04")));
+  const [toDate, setToDate] = React.useState(new Date(new Date()));
+  const [userStatus, setUserStatus] = React.useState("");
 
+  const [profileArray, setProfileArray] = React.useState([]);
 
-export default function Landing(props) {
+  let dispatch = useDispatch();
+  let navigate = useNavigate();
 
-  // for setting the default date of the date picker field.
-  const [fromDate, setFromDate] = React.useState(
-    new Date(new Date("2016-07-04"))
-  );
-  const [toDate, setToDate] = React.useState(
-    new Date(new Date())
-  );
+  // for generating the result of customer based on user status and date.
+  const formSubmitHandler = async (e) => {
+    e.preventDefault();
+    let From = formatDate(fromDate);
+    let To = formatDate(toDate);
 
-  // for setting the default value of the radio button group to select the user status.
-  const [userStatus, setUserSTatus] = React.useState();
+    //  calculating the logic for the selected user status based on date & meals ordered.
+    files.forEach((element) => {
+      let count = 0;
 
-  // for handling the user's action by changeHandler function as a event handler for setting the user status.
-  const changeHandler = (e) => {
-    let value = e.target.value;
-    setUserSTatus(value);
+      Object.keys(element.calendar.dateToDayId).forEach(function (dayId) {
+        if (
+          new Date(From) <= new Date(dayId) &&
+          new Date(To) >= new Date(dayId)
+        ) {
+          Object.keys(element.calendar.mealIdToDayId).forEach(function (
+            mealId
+          ) {
+            if (
+              element.calendar.dateToDayId[dayId] ===
+              element.calendar.mealIdToDayId[mealId]
+            ) {
+              count++;
+            }
+          });
+        }
+      });
+
+      // condition applied for calculating the user status based on the meals ordered.
+      if (userStatus === "active") {
+
+        if (count >= 5 && count <= 10) {
+
+          profileArray.push(element.profile);
+        }
+
+      } else if (userStatus === "superactive") {
+
+        if (count > 10) {
+
+          profileArray.push(element.profile);
+
+        }
+
+      } else if (userStatus === "bored") {
+
+        if (count === 0) {
+
+          profileArray.push(element.profile);
+
+        }
+      }
+      setProfileArray(profileArray);
+
+      console.log(From);
+      console.log(To);
+      console.log(userStatus);
+
+      dispatch(profileArrayUpdate(element, userStatus));
+      navigate("/profiles");
+    });
   };
 
   // for formatting the date to be used in the next render component, to be calculated for selected user status.
@@ -49,15 +102,8 @@ export default function Landing(props) {
     return [year, month, day].join("-");
   }
 
-
-
-
-
   return (
     <>
-      {/* header section  */}
-      <Header showBackArrow={false} />
-
       {/* app container section */}
       <Container maxWidth="sm">
         <div>
@@ -67,7 +113,7 @@ export default function Landing(props) {
           </p>
         </div>
 
-        <form className={Styles.filterBox} onSubmit={props.formSubmitHandler}>
+        <form className={Styles.filterBox} onSubmit={formSubmitHandler}>
           <div className={Styles.heading}>
             <h3 className={Styles.headingFont}>Date</h3>
             <Divider sx={{ width: "400px" }} />
@@ -122,28 +168,33 @@ export default function Landing(props) {
                   value="active"
                   control={<Radio />}
                   label="Active"
-                  onChange={changeHandler}
+                  onChange={(e) => {
+                    setUserStatus(e.target.value);
+                  }}
                 />
                 <FormControlLabel
                   name="user_status"
                   value="superactive"
                   control={<Radio />}
                   label="Super Active"
-                  onChange={changeHandler}
+                  onChange={(e) => {
+                    setUserStatus(e.target.value);
+                  }}
                 />
                 <FormControlLabel
                   name="user_status"
                   value="bored"
                   control={<Radio />}
                   label="Bored"
-                  onChange={changeHandler}
+                  onChange={(e) => {
+                    setUserStatus(e.target.value);
+                  }}
                 />
               </RadioGroup>
             </FormControl>
           </div>
-          <Link to={"/Profiles"}>
-            <button className={Styles.button}>Generate</button>
-          </Link>
+          <button type="submit" className={Styles.button}>Generate</button>
+
         </form>
       </Container>
     </>
