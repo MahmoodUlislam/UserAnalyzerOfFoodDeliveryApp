@@ -23,6 +23,7 @@ export default function Landing() {
 
   const [profileArray, setProfileArray] = React.useState([]);
 
+
   let dispatch = useDispatch();
   let navigate = useNavigate();
 
