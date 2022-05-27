@@ -17,23 +17,34 @@ export default function Profiles() {
     const [toDate, setToDate] = React.useState(new Date(new Date()));
     // for setting the default value of the radio button group to select the user status.
     const [userStatus, setUserStatus] = React.useState();
+    // the value of the search field 
+    const [name, setName] = React.useState('');
+    // the search result
+    const [foundUsers, setFoundUsers] = React.useState(files);
 
-    const [searched, setSearched] = React.useState([]);
 
     let dispatch = useDispatch();
 
+    const filter = (e) => {
+        const keyword = e.target.value;
+
+        if (keyword !== '') {
+            const results = files.filter((profile) => {
+                return profile.profile.name.toLowerCase().startsWith(keyword.toLowerCase());
+                // Use the toLowerCase() method to make it case-insensitive
+            });
+            setFoundUsers(results);
+        } else {
+            setFoundUsers(files);
+            // If the text field is empty, show all users
+        }
+
+        setName(keyword);
+    };
     // for modal
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
-    // for search by user name
-    function requestSearch(e) {
-        setSearched(profiles.filter(files => files.name.toLowerCase().includes(e.target.value.toLowerCase())));
-    }
-    // function cancelSearch() {
-    //     setSearched(profiles);
-    // }
 
     // function filterByStatus() {
     //     return profiles.filter(files => files.status === userStatus);
@@ -113,6 +124,7 @@ export default function Profiles() {
         state => {
             state.showBackArrow = true;
         }
+
     ));
 
     return (
@@ -130,7 +142,6 @@ export default function Profiles() {
                     </p>
                     <Button onClick={handleOpen} style={{ color: "#1490a6" }}>
                         Edit Filter
-
                         <RiEqualizerLine style={{ marginLeft: "5px" }} />
                     </Button>
 
@@ -238,29 +249,39 @@ export default function Profiles() {
                 <input style={{ width: '300px', margin: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
                     type="text"
                     placeholder="Search by name"
-                    value={searched}
-                    onChange={requestSearch}
+                    value={name}
+                    onChange={filter}
                 />
+                {profiles && profiles.length > 0 ? (
+                    <ImageList >
+                        {/* mapping of the profile data for rendering the user's profile */}
+                        {foundUsers && foundUsers.length > 0 ? (
+                            foundUsers.map((profile) => (
+                                <ImageListItem sx={{ maxWidth: "250px", textAlign: "center" }} key={profile.profile.name}>
+                                    <img
+                                        src={`${profile.profile.pictureUrl}?w=248&fit=crop&auto=format`}
+                                        srcSet={`${profile.profile.pictureUrl}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                        alt={profile.profile.name}
+                                        loading="lazy"
+                                    />
+                                    <ImageListItemBar
+                                        title={profile.profile.name}
+                                        subtitle={<span>by: {profile.profile.name}</span>}
+                                        position="below"
+                                    />
+                                </ImageListItem>
 
-                <ImageList >
-                    {/* mapping of the profile data for rendering the user's profile */}
-                    {profiles.map((profile) => (
-                        <ImageListItem sx={{ maxWidth: "250px", textAlign: "center" }} key={profile.profile.name}>
-                            <img
-                                src={`${profile.profile.pictureUrl}?w=248&fit=crop&auto=format`}
-                                srcSet={`${profile.profile.pictureUrl}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                alt={profile.profile.name}
-                                loading="lazy"
-                            />
-                            <ImageListItemBar
-                                title={profile.profile.name}
-                                subtitle={<span>by: {profile.profile.name}</span>}
-                                position="below"
-                            />
-                        </ImageListItem>
-                    ))}
+                            ))
+                        ) : (
+                            <h1>No results found!</h1>
+                        )}
 
-                </ImageList>
+
+                    </ImageList>
+
+                ) : (
+                    <h1>No results found!</h1>
+                )}
             </Container>
         </>
 
